@@ -2,6 +2,7 @@
 
 namespace Anastasia\Blog\Repositories\LikesRepo;
 
+use Psr\Log\LoggerInterface;
 use Anastasia\Blog\Blogs\{UUID, LikeToPost};
 use Anastasia\Blog\Exceptions\{LikeNotFoundException, LikesIsAlreadyExists};
 
@@ -9,7 +10,7 @@ class SqliteLikePostRepo implements LikePostRepositoryInterface
 {
     private \PDO $connection;
 
-    public function __construct(\PDO $connection) {
+    public function __construct(\PDO $connection, private LoggerInterface $logger) {
         $this->connection = $connection;
     }
 
@@ -24,6 +25,8 @@ class SqliteLikePostRepo implements LikePostRepositoryInterface
             ':post_uuid' => $likePost->getPost()->uuid(),
             ':user_uuid' => $likePost->getUser()->uuid()
         ]);
+
+        $this->logger->info("LikePost created: {$likePost->uuid()}");
     }
 
     /**

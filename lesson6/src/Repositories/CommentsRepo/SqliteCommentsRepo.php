@@ -4,12 +4,13 @@ namespace Anastasia\Blog\Repositories\CommentsRepo;
 
 use Anastasia\Blog\Exceptions\{CommentNotFoundException};
 use Anastasia\Blog\Blogs\{Comment, Person\Name, Post, User, UUID};
+use Psr\Log\LoggerInterface;
 
 class SqliteCommentsRepo implements CommentsRepositoryInterface
 {
     private \PDO $connection;
 
-    public function __construct(\PDO $connection) {
+    public function __construct(\PDO $connection, private LoggerInterface $logger) {
         $this->connection = $connection;
     }
 
@@ -27,6 +28,8 @@ class SqliteCommentsRepo implements CommentsRepositoryInterface
             ':uuid' => (string)$uuid,
         ]);
 
+        $this->logger->warning("Comment not found: $uuid");
+
         return $this->getComment($statement, $uuid);
     }
 
@@ -42,6 +45,8 @@ class SqliteCommentsRepo implements CommentsRepositoryInterface
             ':post_uuid' => $comment->getPost()->uuid(),
             ':text' => $comment->getText(),
         ]);
+
+        $this->logger->info("Comment created: {$comment->uuid()}");
     }
 
     public function getComment(\PDOStatement $statement, string $comment_uuid): Comment

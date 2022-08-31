@@ -4,6 +4,7 @@ namespace Anastasia\Blog\Repositories\UsersRepo;
 
 use Anastasia\Blog\Exceptions\InvalidArgumentException;
 use Anastasia\Blog\Exceptions\UserNotFoundException;
+use Psr\Log\LoggerInterface;
 use Anastasia\Blog\Blogs\{User, UUID};
 use Anastasia\Blog\Blogs\Person\Name;
 
@@ -11,7 +12,7 @@ class SqliteUsersRepo implements UsersRepositoryInterface
 {
     private \PDO $connection;
 
-    public function __construct(\PDO $connection) {
+    public function __construct(\PDO $connection, private LoggerInterface $logger) {
         $this->connection = $connection;
     }
 
@@ -28,6 +29,8 @@ class SqliteUsersRepo implements UsersRepositoryInterface
             ':uuid' => (string)$uuid,
         ]);
 
+        $this->logger->warning("User not found: $uuid");
+
         return $this->getUser($statement, $uuid);
     }
 
@@ -43,6 +46,8 @@ class SqliteUsersRepo implements UsersRepositoryInterface
             ':uuid' => (string)$user->uuid(),
             ':userName' => $user->userName(),
         ]);
+
+        $this->logger->info("User created: {$user->uuid()}");
     }
 
     /**

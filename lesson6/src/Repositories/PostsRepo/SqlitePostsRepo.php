@@ -5,12 +5,13 @@ namespace Anastasia\Blog\Repositories\PostsRepo;
 use Anastasia\Blog\Exceptions\InvalidArgumentException;
 use Anastasia\Blog\Exceptions\PostNotFoundException;
 use Anastasia\Blog\Blogs\{Person\Name, Post, User, UUID};
+use Psr\Log\LoggerInterface;
 
 class SqlitePostsRepo implements PostsRepositoryInterface
 {
     private \PDO $connection;
 
-    public function __construct(\PDO $connection) {
+    public function __construct(\PDO $connection, private LoggerInterface $logger) {
         $this->connection = $connection;
     }
 
@@ -31,6 +32,8 @@ class SqlitePostsRepo implements PostsRepositoryInterface
             ':uuid' => (string)$uuid,
         ]);
 
+        $this->logger->warning("Post not found: $uuid");
+
         return $this->getPost($statement, $uuid);
     }
 
@@ -46,6 +49,8 @@ class SqlitePostsRepo implements PostsRepositoryInterface
             ':title' => $post->getTitle(),
             ':text' => $post->getText()
         ]);
+
+        $this->logger->info("Post created: {$post->uuid()}");
     }
 
     public function delete(UUID $uuid): void
