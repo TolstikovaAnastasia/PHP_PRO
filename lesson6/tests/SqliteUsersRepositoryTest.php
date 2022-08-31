@@ -22,7 +22,7 @@ class SqliteUsersRepositoryTest extends TestCase
 
         $connectionMock->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteUsersRepo($connectionMock);
+        $repository = new SqliteUsersRepo($connectionMock, new DummyLogger());
         $this->expectException(UserNotFoundException::class);
         $this->expectExceptionMessage('Cannot find user: Ivan');
 
@@ -45,7 +45,7 @@ class SqliteUsersRepositoryTest extends TestCase
             ]);
 
         $connectionStub->method('prepare')->willReturn($statementMock);
-        $repository = new SqliteUsersRepo($connectionStub);
+        $repository = new SqliteUsersRepo($connectionStub, new DummyLogger());
         $repository->save(
             new User(
                 new UUID('123e4567-e89b-12d3-a456-426614174000'),

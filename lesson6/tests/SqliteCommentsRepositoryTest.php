@@ -20,7 +20,7 @@ class SqliteCommentsRepositoryTest extends TestCase
 
         $connectionMock->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteCommentsRepo($connectionMock);
+        $repository = new SqliteCommentsRepo($connectionMock, new DummyLogger());
         $this->expectException(CommentNotFoundException::class);
         $this->expectExceptionMessage('Cannot find comment: 1546058f-5a25-4334-85ae-e68f2a44bbaf');
 
@@ -43,7 +43,7 @@ class SqliteCommentsRepositoryTest extends TestCase
             ]);
 
         $connectionStub->method('prepare')->willReturn($statementMock);
-        $repository = new SqliteCommentsRepo($connectionStub);
+        $repository = new SqliteCommentsRepo($connectionStub, new DummyLogger());
 
         $user = new User(
             new UUID('123e4567-e89b-12d3-a456-426614174000'),

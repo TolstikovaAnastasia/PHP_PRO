@@ -20,7 +20,7 @@ class SqlitePostsRepositoryTest extends TestCase
 
         $connectionMock->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqlitePostsRepo($connectionMock);
+        $repository = new SqlitePostsRepo($connectionMock, new DummyLogger());
         $this->expectException(PostNotFoundException::class);
         $this->expectExceptionMessage('Cannot find post: 94b55fcc-8102-441f-b24c-ae97e8c2d2f7');
 
@@ -43,7 +43,7 @@ class SqlitePostsRepositoryTest extends TestCase
             ]);
 
         $connectionStub->method('prepare')->willReturn($statementMock);
-        $repository = new SqlitePostsRepo($connectionStub);
+        $repository = new SqlitePostsRepo($connectionStub, new DummyLogger());
 
         $user = new User(
             new UUID('123e4567-e89b-12d3-a456-426614174000'),
